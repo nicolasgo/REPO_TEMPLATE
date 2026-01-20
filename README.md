@@ -1,4 +1,4 @@
-# repo__TEMPLATE__data_pipeline
+# REPO_TEMPLATE
 
 Template de repo pour projets data/pandas (pipelines + notebooks) — prêt à copier/“Use as template”.
 
