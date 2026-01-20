@@ -1,0 +1,2 @@
+# Notebooks: évite le bruit et aide à diff/merge
+*.ipynb text eol=lf

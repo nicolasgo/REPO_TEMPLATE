@@ -1,0 +1,16 @@
+.env
+data/
+*.parquet
+*.csv
+*.jsonl
+*.pkl
+logs/
+*.log
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+*.egg-info/
+.ipynb_checkpoints/
+.DS_store

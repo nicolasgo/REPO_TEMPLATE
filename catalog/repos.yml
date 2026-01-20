@@ -1,0 +1,7 @@
+repos:
+  - name: template-data-pipeline
+    purpose: "Template"
+    local_path: "."
+    main_commands:
+      - "pip install -e ."
+      - "jupyter lab"
