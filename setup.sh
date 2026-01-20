@@ -25,13 +25,17 @@ ENV_NAME=""
 PYTHON_VERSION="3.12"
 USE_CONDA="1"
 SETUP_GIT="1"
+PIP_UPGRADE="1"
 
 # --- Détecter si le script est "sourcé" (exécuté dans le shell courant)
 # Si non sourcé, conda activate ne peut pas persister après la fin du script.
-_IS_SOURCED="0"
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-  _IS_SOURCED="1"
+(return 0 2>/dev/null) && _IS_SOURCED="1" || _IS_SOURCED="0"
+
+if [[ "$_IS_SOURCED" == "0" ]]; then
+    echo "Erreur : Ce script doit être sourcé (source ./script.sh) pour activer Conda."
+    exit 1
 fi
+
 
 if [[ "${_IS_SOURCED}" == "0" && "${USE_CONDA}" == "1" ]]; then
   echo "ERROR: Ce script doit être sourcé pour que 'conda activate' persiste."
@@ -60,6 +64,10 @@ while [[ $# -gt 0 ]]; do
       SETUP_GIT="0"
       shift 1
       ;;
+    --no-pip-upgrade)
+      PIP_UPGRADE="0"
+      shift 1
+      ;;   
     -h|--help)
       cat << 'EOF'
 Usage:
@@ -166,7 +174,11 @@ if ! command -v python >/dev/null 2>&1; then
 fi
 
 echo "==> python: $(python --version)"
-python -m pip install -U pip >/dev/null
+if [[ "${PIP_UPGRADE}" == "1" ]]; then
+  python -m pip install -U pip >/dev/null
+else
+  echo "==> pip upgrade: skip (--no-pip-upgrade)"
+fi
 
 # Install projet en editable si possible
 if [[ -f "pyproject.toml" ]]; then
@@ -192,15 +204,23 @@ fi
 # 4) nbstripout (dev quality pour notebooks)
 # -----------------------
 if [[ "${SETUP_GIT}" == "1" ]]; then
-  echo "==> installation nbstripout"
-  python -m pip install nbstripout >/dev/null
-
-  echo "==> activation nbstripout (repo local)"
-  nbstripout --install >/dev/null
-
-  # Bonus: activer un "clean" automatique des outputs au commit
-  # (nbstripout le fait via filtres git; pas besoin de hook custom)
-  echo "==> nbstripout OK"
+    # Détection: nbstripout déjà activé dans le repo ?
+    _HAS_NBSTRIPOUT="0"
+    if git config --local --get filter.nbstripout.clean >/dev/null 2>&1; then
+      _HAS_NBSTRIPOUT="1"
+    fi
+    
+    if [[ "${_HAS_NBSTRIPOUT}" == "1" ]]; then
+      echo "==> nbstripout: déjà activé (skip)"
+    else
+      echo "==> installation nbstripout"
+      python -m pip install nbstripout >/dev/null
+    
+      echo "==> activation nbstripout (repo local)"
+      nbstripout --install >/dev/null
+    
+      echo "==> nbstripout OK"
+    fi
 fi
 
 cat << EOF
