@@ -26,6 +26,22 @@ PYTHON_VERSION="3.12"
 USE_CONDA="1"
 SETUP_GIT="1"
 
+# --- Détecter si le script est "sourcé" (exécuté dans le shell courant)
+# Si non sourcé, conda activate ne peut pas persister après la fin du script.
+_IS_SOURCED="0"
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  _IS_SOURCED="1"
+fi
+
+if [[ "${_IS_SOURCED}" == "0" && "${USE_CONDA}" == "1" ]]; then
+  echo "ERROR: Ce script doit être sourcé pour que 'conda activate' persiste."
+  echo "Lance-le ainsi:"
+  echo "  source ./setup.sh --env <env_name> --python <version>"
+  echo "ou:"
+  echo "  . ./setup.sh --env <env_name> --python <version>"
+  exit 1
+fi
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --env)
