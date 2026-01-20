@@ -5,11 +5,18 @@ Template de repo pour projets data/pandas (pipelines + notebooks) — prêt à c
 > Renomme `_template_pkg` (package Python) + ajuste `pyproject.toml` / imports.
 
 ## Démarrage rapide
-1. Renommer le repo
-2. Renommer le package Python: `src/_template_pkg` → `src/<nom_pkg>`
+
+1. Cloner le repo
+
+2. Depuis la racine du projet, exécuter :
+   - `source ./setup.sh --env <nom_env> --python 3.11`
+
+
 3. Créer l’env (conda ou autre), puis:
    - `pip install -e .`
+
 4. Utiliser `notebooks/` pour le dev exploratoire
+
 5. Écrire le runbook minimal: `docs/runbook.md`
 
 ## Règles
